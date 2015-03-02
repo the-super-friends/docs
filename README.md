@@ -1,6 +1,10 @@
 # docs
 just a readme with links to etherpads / gdocs
 
+**Note: you can edit this document in the browser**
+- from the top level repo, click on the README file
+- click the pencil icon to edit
+
 ## meeting notes
 
 ### high level
@@ -13,3 +17,5 @@ just a readme with links to etherpads / gdocs
 ## links of interest
 
 - adding search providers is ridiculously easy: https://developer.mozilla.org/en-US/Add-ons/Creating_OpenSearch_plugins_for_Firefox
+
+- SUMO page explaining how to enable different kinds of content in urlbar autocomplete results: https://support.mozilla.org/en-US/kb/awesome-bar-find-your-bookmarks-history-and-tabs#w_how-can-i-control-what-results-the-location-bar-shows-me
