@@ -19,3 +19,5 @@ just a readme with links to etherpads / gdocs
 - adding search providers is ridiculously easy: https://developer.mozilla.org/en-US/Add-ons/Creating_OpenSearch_plugins_for_Firefox
 
 - SUMO page explaining how to enable different kinds of content in urlbar autocomplete results: https://support.mozilla.org/en-US/kb/awesome-bar-find-your-bookmarks-history-and-tabs#w_how-can-i-control-what-results-the-location-bar-shows-me
+
+- XUL docs: Content Panels, or, how to load remote web pages inside XUL chrome: https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Tutorial/Content_Panels
