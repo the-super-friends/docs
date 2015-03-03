@@ -1,4 +1,20 @@
-## guide to relevant parts of gecko
+# hacking on gecko
+
+## links
+
+- MDN article explaining how to work with (privileged) web content windows from browser chrome: https://developer.mozilla.org/en-US/docs/Working_with_windows_in_chrome_code
+
+- MDN article explaining communication between privileged (browser chrome) and non-privileged (ordinary web) windows: https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Interaction_between_privileged_and_non-privileged_pages
+
+- adding search providers is ridiculously easy: https://developer.mozilla.org/en-US/Add-ons/Creating_OpenSearch_plugins_for_Firefox
+
+- SUMO page explaining how to enable different kinds of content in urlbar autocomplete results: https://support.mozilla.org/en-US/kb/awesome-bar-find-your-bookmarks-history-and-tabs#w_how-can-i-control-what-results-the-location-bar-shows-me
+
+- XUL docs: Content Panels, or, how to load remote web pages inside XUL chrome: https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Tutorial/Content_Panels
+
+- ancient mozillazine article includes links to Firefox 3-era urlbar modifier addons: http://kb.mozillazine.org/Disabling_autocomplete_%28Firefox%29
+
+## teh codez
 
 `/browser/base/content/browser.js`
   - assembles the modules
