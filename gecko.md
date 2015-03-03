@@ -34,3 +34,7 @@ These are implementations of `nsIAutoCompleteInput` I've found in the gecko code
 
 `toolkit/components/satchel`
   - need to read this and figure out what it does
+
+### Misc
+
+- places database schema: https://wiki.mozilla.org/images/0/08/Places.sqlite.schema.pdf
