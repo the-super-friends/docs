@@ -14,7 +14,7 @@
 
 - ancient mozillazine article includes links to Firefox 3-era urlbar modifier addons: http://kb.mozillazine.org/Disabling_autocomplete_%28Firefox%29
 
-## teh codez
+## Reading the Code / Orienteering
 
 `/browser/base/content/browser.js`
   - assembles the modules
