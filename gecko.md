@@ -35,22 +35,22 @@
 
 ### Views
 
-`/base/content/browser.xul`
+- `/base/content/browser.xul`
   - defines an `autocomplete-richtextbox` entity (i.e. an xml tag name)
     - this corresponds to `PopupAutoCompleteRichResult`
     - which is defined in `components/search/content/search.xml`
   
-`/browser/base/content/urlbarBindings.xml`
+- `/browser/base/content/urlbarBindings.xml`
   - urlbar UI handlers defined inside an XML file
   - urlbar extends `content/bindings/autocomplete.xml`, not sure if that really means
     `toolkit/content/widgets/autocomplete.xml` which seems to have similar stuff in it
 
-`/toolkit/content/widgets/autocomplete.xml`
+- `/toolkit/content/widgets/autocomplete.xml`
   - UI definitions for the autocomplete UI that drops down
 
 ### Controllers
 
-`components/autocomplete/nsAutoCompleteController.cpp`
+- `components/autocomplete/nsAutoCompleteController.cpp`
   - `HandleText` method contains logic around when to search & waiting for user to stop typing
   - `StartSearches` method - set a timer, call `StartSearch`
   - `StartSearch` - loop over `mSearches`, call `startSearch` on (some of) them
@@ -60,13 +60,13 @@
 
 These are implementations of `nsIAutoCompleteInput` I've found in the gecko codebase:
 
-`toolkit/components/places/nsPlacesAutoComplete.js`
+- `toolkit/components/places/nsPlacesAutoComplete.js`
   - This file is incredibly helpful. We can lean on this implementation when defining our own autocomplete implementation (though we need to investigate how other search providers integrate into autocomplete. I've found an OpenSearch specification, need to explore further)
   - Autocomplete strings are sent here, to be queried against the Places SQLite DB
   - see "Smart Getters" section for SQL queries corresponding to keyword, bookmark, "frecency", etc searches
   - `startSearch` function is very helpful reading
 
-`toolkit/components/satchel`
+- `toolkit/components/satchel`
   - need to read this and figure out what it does
 
 ### Digging into Search (search bar, not urlbar/awesomebar)
@@ -75,21 +75,21 @@ These are implementations of `nsIAutoCompleteInput` I've found in the gecko code
   - https://developer.mozilla.org/en-US/Add-ons/Creating_OpenSearch_plugins_for_Firefox
   - examples are localized, see, eg, `browser/locales/en-US/searchplugins`
 
-`browser/base/content/searchSuggestionUI.js`
+- `browser/base/content/searchSuggestionUI.js`
   - creates an xhtml table, inserts into DOM after a given textbox el, styles it to look like a dropdown
   - emits `GetSuggestions` signal with packet format `{engineName, searchString, remoteTimeout}`
   - listens for `ContentSearchService` events on `window`
 
-`netwerk/base/nsIBrowserSearchService.idl`
+- `netwerk/base/nsIBrowserSearchService.idl`
   - C++ interface defining a remote service facade
 
-`toolkit/components/search/nsSearchService.js`
+- `toolkit/components/search/nsSearchService.js`
   - basically a service facade, abstracts an OpenSearch endpoint
   - instantiates an Engine, sends requests, returns responses to caller
   - maintains a sorted array of Engines
   - also includes `engineMetadataService` (modifies & saves engine attributes to disk), `engineUpdateService` (checks for engine definition updates, modifies local Engines as needed)
 
-`toolkit/components/search/nsSearchSuggestionController.js`
+- `toolkit/components/search/nsSearchSuggestionController.js`
   - helper module, code comments say it was factored out of `nsSearchSuggestions` to allow multiple consumers to request & display search suggestions from a given Engine (implementation of `nsISearchEngine`)
   - caches form history results
   - since it provides caching & recent search history, designed to use one of these per textbox
@@ -99,7 +99,7 @@ These are implementations of `nsIAutoCompleteInput` I've found in the gecko code
     - `SearchSuggestionController::_fetchFormHistory` - get an `nsIAutoCompleteSearch` implementation, call `startSearch` on it, handle response
     - `SearchSuggestionController::_fetchRemote` - given an engine (`nsISearchEngine`), get the URL via `engine.getSubmission`, then create & send an XHR
 
-`toolkit/components/search/nsSearchSuggestions.js`
+- `toolkit/components/search/nsSearchSuggestions.js`
   - defines `SuggestAutoComplete`, base implementation of `nsIAutoCompleteSearch`
   - I think (not sure) input from the front-end is handled by `nsSearchSuggestionController`
   - sends output to front-end by:
