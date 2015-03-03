@@ -16,7 +16,9 @@ just a readme with links to etherpads / gdocs
 
 ## links of interest
 
-- MDN article explaining how to work with web content windows from browser chrome: https://developer.mozilla.org/en-US/docs/Working_with_windows_in_chrome_code
+- MDN article explaining how to work with (privileged) web content windows from browser chrome: https://developer.mozilla.org/en-US/docs/Working_with_windows_in_chrome_code
+
+- MDN article explaining communication between privileged (browser chrome) and non-privileged (ordinary web) windows: https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Interaction_between_privileged_and_non-privileged_pages
 
 - adding search providers is ridiculously easy: https://developer.mozilla.org/en-US/Add-ons/Creating_OpenSearch_plugins_for_Firefox
 
