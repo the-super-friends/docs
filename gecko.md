@@ -2,15 +2,28 @@
 
 ## links
 
-- MDN article explaining how to work with (privileged) web content windows from browser chrome: https://developer.mozilla.org/en-US/docs/Working_with_windows_in_chrome_code
+### XUL-related
 
-- MDN article explaining communication between privileged (browser chrome) and non-privileged (ordinary web) windows: https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Interaction_between_privileged_and_non-privileged_pages
+- Working with XUL popups, like the autocomplete results dropdown: https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/PopupGuide
+
+- Working with windows from XUL: opening windows, accessing content windows, passing data between windows (many approaches): https://developer.mozilla.org/en-US/docs/Working_with_windows_in_chrome_code
+
+- Messaging between web content and chrome (code snippets): https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Interaction_between_privileged_and_non-privileged_pages
+  - basically, either custom DOM events or postMessage
+  - if postMessage, the final arg to the event listener in privileged chrome code must be 'true'
+  - a third option: Chromium-style JSON message passing
+
+- Displaying HTML inside XUL using iframes:
+  - iframe vs browser XUL element types: https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Tutorial/Content_Panels
+  - XUL iframe defn (!= HTML iframe defn) https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/iframe
+  - how to reduce permissions granted to web content inside a XUL iframe (XUL iframes, even if loading untrusted content, have root-level permissions by default): https://developer.mozilla.org/en-US/docs/Displaying_web_content_in_an_extension_without_security_issues
+    - we will be rendering external content in our results, so we want to treat it as untrusted
+
+### OpenSearch / adding search providers
 
 - adding search providers is ridiculously easy: https://developer.mozilla.org/en-US/Add-ons/Creating_OpenSearch_plugins_for_Firefox
 
 - SUMO page explaining how to enable different kinds of content in urlbar autocomplete results: https://support.mozilla.org/en-US/kb/awesome-bar-find-your-bookmarks-history-and-tabs#w_how-can-i-control-what-results-the-location-bar-shows-me
-
-- XUL docs: Content Panels, or, how to load remote web pages inside XUL chrome: https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Tutorial/Content_Panels
 
 - ancient mozillazine article includes links to Firefox 3-era urlbar modifier addons: http://kb.mozillazine.org/Disabling_autocomplete_%28Firefox%29
 
