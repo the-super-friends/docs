@@ -41,25 +41,26 @@ It looks like the autocomplete code loosely binds a dropdown box and search prov
 
 ## Reading the Code / Orienteering
 
-### MDN API docs describing autocomplete-related interfaces
+### autocomplete-related interfaces - based on MDN, which omits some of them
 
-(TODO - need to reconcile these with results of my code reading further below)
+Beware: MDN doesn't distinguish between obsolete xpfe interfaces (like `nsIAutoCompleteItem`) and toolkit interfaces used in modern Firefox. Everything we care about is under the top-level `/toolkit` module.
+
+TODO: this needs another pass, the code is in a semi-refactored state, MDN is slightly inaccurate, need to reconcile everything
 
 - Major interfaces used by the autocomplete service:
-  - [`nsIAutoCompleteSearch`](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIAutoCompleteSearch) - object representing autocomplete search provider as an XPCOM service.
+  - `nsIAutoCompleteSearch` ([MDN docs](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIAutoCompleteSearch), [C++ interface source](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/autocomplete/nsIAutoCompleteSearch.idl)) - object representing autocomplete search provider as an XPCOM service. (Note, the `SearchSuggestionController` (`toolkit/components/search/SearchSuggestionController.jsm`) [code comments](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/search/SearchSuggestionController.jsm#31-37) say it was extracted from the `nsSearchSuggestions.jsm` file to remove the dependency on the `nsIAutoCompleteSearch` interface. Not yet sure why.)
     - Exposes a single method, `startSearch`, which is passed the search query, and an `nsIAutoCompleteObserver` that accepts results in the form of an `nsIAutoCompleteResult` object. (This is a simplified summary; see the MDN page for full details and optional parameters.)
-  - [`nsIAutoCompleteObserver`](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIAutoCompleteObserver) - exposes `onSearchResult` and `onUpdateSearchResult` methods (updating allows for asynchronous insertion of values from a remote service, I think).
-  - [`nsIAutoCompleteResult`](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIAutoCompleteResult) - represents the result of a search. The interface name is a bit ambiguous - this isn't an individual result from a search, it's an individual response from the search service for a given query. Contains result status (did search find a match, not find a match, or timeout); result count; and the actual results.
+  - `nsIAutoCompleteObserver` ([MDN docs](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIAutoCompleteObserver), [dxr code](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/autocomplete/nsIAutoCompleteSearch.idl#34)) - exposes `onSearchResult` and `onUpdateSearchResult` methods (updating allows for asynchronous insertion of values from a remote service, I think).
+  - `nsIAutoCompleteResult` ([MDN docs](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIAutoCompleteResult), [dxr code](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/autocomplete/nsIAutoCompleteResult.idl)) - represents the result of a search. The interface name is a bit ambiguous - this isn't an individual result from a search, it's an individual response from the search service for a given query. Contains result status (did search find a match, not find a match, or timeout); result count; and the actual results.
+    - `nsIAutoCompleteSimpleResult`, an interesting subclass ([C++ idl](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/autocomplete/nsIAutoCompleteSimpleResult.idl), [header file](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/autocomplete/nsAutoCompleteSimpleResult.h), [C++ impl](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/autocomplete/nsAutoCompleteSimpleResult.cpp)) - used by satchel's `nsFormFillController`, and the places `nsPlacesAutoComplete.js` and `UnifiedComplete.js` files, TODO explore further
 
-- Major interfaces used by the autocomplete UI layer:
+- Major interfaces used by the autocomplete UI layer (TODO needs updating):
   - [`nsIAutoCompleteController`](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIAutoCompleteController) - it's a controller but doesn't directly observe DOM; instead, observes user input / key press events fired by a `nsIAutoCompleteInput`, which could either be a XUL autocomplete textbox or a form fill controller that handles website form history
   - [`nsIAutoCompleteInput`](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIAutoCompleteInput) - monitors the input in a text field and displays an autocomplete panel at the appropriate time
-  - [`nsIAutoCompleteItem`](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIAutoCompleteItem) - seems like it represents individual autocomplete result, includes a CSS class to be used in styling (*note: this interface is only in the `xpfe` module, maybe it is totally outdated?*)
-
-TODO: figure out whether xpfe is still used in firefox or is deprecated or wtf the story is here, eg,  https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Textbox_%28XPFE_autocomplete%29
+  - `nsIAutoCompletePopup` ([C++ interface](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/autocomplete/nsIAutoCompletePopup.idl), [XUL implementation](https://dxr.mozilla.org/mozilla-central/source/toolkit/content/widgets/autocomplete.xml#45)) - binds an `nsIAutoCompleteInput` object to an `nsIDOMElement`
 
 
-### docs generated by actually reading the code:
+### docs generated by actually reading the code, organized by filename:
 
 `/browser/base/content/browser.js`
   - assembles the modules
@@ -67,7 +68,7 @@ TODO: figure out whether xpfe is still used in firefox or is deprecated or wtf t
 
 ### Views
 
-- `/base/content/browser.xul`
+- `/browser/base/content/browser.xul`
   - defines an `autocomplete-richtextbox` entity (i.e. an xml tag name)
     - this corresponds to `PopupAutoCompleteRichResult`
     - which is defined in `components/search/content/search.xml`
@@ -82,7 +83,7 @@ TODO: figure out whether xpfe is still used in firefox or is deprecated or wtf t
 
 ### Controllers
 
-- `components/autocomplete/nsAutoCompleteController.cpp`
+- `/toolkit/components/autocomplete/nsAutoCompleteController.cpp`
   - `HandleText` method contains logic around when to search & waiting for user to stop typing
   - `StartSearches` method - set a timer, call `StartSearch`
   - `StartSearch` - loop over `mSearches`, call `startSearch` on (some of) them
@@ -90,13 +91,26 @@ TODO: figure out whether xpfe is still used in firefox or is deprecated or wtf t
 
 ### Services
 
-These are implementations of `nsIAutoCompleteInput` I've found in the gecko codebase:
+These are implementations of autocomplete interfaces I've found in the gecko codebase:
 
-- `toolkit/components/places/nsPlacesAutoComplete.js`
-  - This file is incredibly helpful. We can lean on this implementation when defining our own autocomplete implementation (though we need to investigate how other search providers integrate into autocomplete. I've found an OpenSearch specification, need to explore further)
-  - Autocomplete strings are sent here, to be queried against the Places SQLite DB
-  - see "Smart Getters" section for SQL queries corresponding to keyword, bookmark, "frecency", etc searches
-  - `startSearch` function is very helpful reading
+- `/toolkit/components/places`
+  - TODO look at other files in this directory
+  - `/toolkit/components/places/nsPlacesAutoComplete.js`
+    - This file is incredibly helpful. We can lean on this implementation when defining our own autocomplete implementation (though we need to investigate how other search providers integrate into autocomplete. I've found an OpenSearch specification, need to explore further)
+    - Autocomplete strings are sent here, to be queried against the Places SQLite DB
+    - see "Smart Getters" section for SQL queries corresponding to keyword, bookmark, "frecency", etc searches
+    - `startSearch` function is very helpful reading
+
+- `/toolkit/components/filepicker`
+  - Looks like an implementation of the autocomplete service interfaces:
+    - [`nsFileComplete`](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/filepicker/nsFileView.cpp#188) - C++ code, implements `nsIAutoCompleteSearch`
+    - [`nsFileResult`](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/filepicker/nsFileView.cpp#37) - C++ code, implements `nsIAutoCompleteResult`
+  - I don't see autocomplete-specific UI elements. Instead, I see classic MVC:
+    - [`/tookit/components/filepicker/content/filepicker.xul`](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/filepicker/content/filepicker.xul) - a very simple View: template for the file picker dialog 
+    - [`nsFilePicker` (`/toolkit/components/filepicker/nsFilePicker.js`)](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/filepicker/nsFilePicker.js) - a large Model: operates on the underlying file system using various C++ iterators/enumerators; manages the results by setting properties on itself; its state is rendered into the `filepicker.xul` file picker dialog by the `filepicker.js` controller
+    - `nsFileView`
+      - ([`C++ interface`](), [`C++ class`](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/filepicker/nsFileView.cpp#219)) -  implements `nsITreeView` - looks like a base C++ class and interface, I'm not totally clear on the boundary between C++ and JS implementations of these interfaces
+      - [`JS implementation` (`/toolkit/components/filepicker/content/filepicker.js`)](https://dxr.mozilla.org/mozilla-central/source/toolkit/components/filepicker/content/filepicker.js) - a Controller: binds handlers for click and other DOM events; updates the View (in this case, a dumb XUL template) with results; all the data seems to live in the `nsFilePicker.js` model.
 
 - `toolkit/components/satchel`
   - need to read this and figure out what it does
