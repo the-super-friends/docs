@@ -31,6 +31,12 @@ It looks like the autocomplete code loosely binds a dropdown box and search prov
   - how to reduce permissions granted to web content inside a XUL iframe (XUL iframes, even if loading untrusted content, have root-level permissions by default): https://developer.mozilla.org/en-US/docs/Displaying_web_content_in_an_extension_without_security_issues
     - we will be rendering external content in our results, so we want to treat it as untrusted
 
+### How navbar customization works (removing the separate searchbar)
+
+- If you customize Firefox UI with the Customize builder, the results will be stored in the profile, in a file called `xulstore.json`.
+  - If you customize so that the searchbar is removed, then `xulstore['chrome://browser/content/browser.xul']['nav-bar'].currentset` becomes `'urlbar-container,bookmarks-menu-button,downloads-button,home-button,loop-button'`.
+  - This file is not present by default, so faking it seems difficult/error-prone. Maybe we can hook into the customization behavior (it's probably an XPCOM service?) rather than simply hiding the searchbar via some kind of CSS hack at XUL load time.
+
 ### OpenSearch / adding search providers
 
 - adding search providers is ridiculously easy: https://developer.mozilla.org/en-US/Add-ons/Creating_OpenSearch_plugins_for_Firefox
